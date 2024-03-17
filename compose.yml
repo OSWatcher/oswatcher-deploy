@@ -32,6 +32,18 @@ services:
       timeout: 20s
       retries: 3
 
+  api:
+    depends_on:
+      - neo4j
+    build:
+      context: ../graphql-api
+    ports:
+      - "4000:4000"
+    environment:
+      NEO4J_USER: ${NEO4J_USER}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD}
+      NEO4J_URI: "bolt://neo4j:7687"
+
 volumes:
   neo4j_data:
   minio_data:
