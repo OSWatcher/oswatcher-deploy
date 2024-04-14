@@ -3,6 +3,7 @@ services:
     image: neo4j:${NEO4J_VERSION}
     environment:
       NEO4J_AUTH: ${NEO4J_AUTH}
+      NEO4J_PLUGINS: '["apoc"]'
         # NEO4J_server_memory_heap_max__size: ${HEAP_MAXSIZE}
         # NEO4J_db_memory_transaction_total_max: ${TSX_TOTAL}
     ports:
