@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  api:
+    image: ghcr.io/oswatcher/graphql-api:latest
+
+# frontend is deployed on Github Pages

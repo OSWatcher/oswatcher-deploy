@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ../graphql-api
+
+  frontend:
+    depends_on:
+      - api
+    build:
+      context: ../osw-frontend
+    ports:
+      - "8080:8080"
+    environment:
+      GRAPHEOS_API_URI: "http://api:4000"
