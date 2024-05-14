@@ -4,8 +4,11 @@ services:
     environment:
       NEO4J_AUTH: ${NEO4J_AUTH}
       NEO4J_PLUGINS: '["apoc"]'
-        # NEO4J_server_memory_heap_max__size: ${HEAP_MAXSIZE}
-        # NEO4J_db_memory_transaction_total_max: ${TSX_TOTAL}
+      # https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.memory.heap.max_size
+      # NEO4J_server_memory_heap_max__size: ${HEAP_MAXSIZE}
+      # https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_dbms.memory.transaction.total.max
+      # 0: unlimited
+      NEO4J_dbms_memory_transaction_total_max: 0
     ports:
       - "7474:7474"  # HTTP
       - "7687:7687"  # Bolt
