@@ -4,6 +4,8 @@ services:
   api:
     build:
       context: ../graphql-api
+    labels:
+      - "traefik.http.routers.api.rule=Host(`api.localhost`)"
 
   traefik:
     command:
@@ -12,9 +14,9 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls=true"
-      - "--providers.file.filename=/certs.yml"
+      - "--providers.file.filename=/dynamic.yml"
     volumes:
-      - "./certs.yml:/certs.yml"
+      - "./certs/dev.yml:/dynamic.yml"
       - "./certs:/certs"
 
   frontend:
