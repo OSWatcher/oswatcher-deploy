@@ -5,6 +5,18 @@ services:
     build:
       context: ../graphql-api
 
+  traefik:
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--providers.file.filename=/certs.yml"
+    volumes:
+      - "./certs.yml:/certs.yml"
+      - "./certs:/certs"
+
   frontend:
     depends_on:
       - api
@@ -13,4 +25,4 @@ services:
     ports:
       - "8080:8080"
     environment:
-      GRAPHEOS_API_URI: "http://api:4000"
+      GRAPHEOS_API_URI: "https://api.localhost"
