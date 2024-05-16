@@ -1,7 +1,31 @@
 version: '3.8'
 
 services:
+  minio:
+    labels:
+      - "traefik.http.routers.minio.rule=Host(`storage.grapheos.app`)"
+
   api:
     image: ghcr.io/oswatcher/graphql-api:latest
+    labels:
+      - "traefik.http.routers.api.rule=Host(`api.grapheos.app`)"
+
+  traefik:
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=mathieu.tarral@protonmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--providers.file.filename=/dynamic.yml"
+    volumes:
+      - "letsencrypt:/letsencrypt"
+      - "./certs/prod.yml:/dynamic.yml"
+
+volumes:
+  letsencrypt:
 
 # frontend is deployed on Github Pages
