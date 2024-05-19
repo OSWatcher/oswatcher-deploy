@@ -1,16 +1,22 @@
 version: '3.8'
 
 services:
+  neo4j:
+    restart: unless-stopped
+
   minio:
+    restart: unless-stopped
     labels:
       - "traefik.http.routers.minio.rule=Host(`storage.grapheos.app`)"
 
   api:
     image: ghcr.io/oswatcher/graphql-api:latest
+    restart: unless-stopped
     labels:
       - "traefik.http.routers.api.rule=Host(`api.grapheos.app`)"
 
   traefik:
+    restart: unless-stopped
     command:
       - "--api.insecure=false"
       - "--providers.docker=true"
