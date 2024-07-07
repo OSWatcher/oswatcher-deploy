@@ -1,6 +1,12 @@
 version: '3.8'
 
 services:
+  neo4j:
+    environment:
+      NEO4J_apoc_export_file_enabled: "true"  # Enable APOC export to files
+      NEO4J_db_logs_query_enabled: "VERBOSE"
+      NEO4J_db_logs_query_parameter__logging__enabled: "true"
+      NEO4J_db_logs_query_transaction_enabled: "VERBOSE"
   api:
     build:
       context: ../graphql-api
