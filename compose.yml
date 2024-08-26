@@ -3,7 +3,7 @@ services:
     image: neo4j:${NEO4J_VERSION}
     environment:
       NEO4J_AUTH: ${NEO4J_AUTH}
-      NEO4J_PLUGINS: '["apoc", "apoc-extended"]'
+      NEO4J_PLUGINS: '["apoc"]'
       # https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.memory.heap.max_size
       # NEO4J_server_memory_heap_max__size: ${HEAP_MAXSIZE}
       # https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_dbms.memory.transaction.total.max
@@ -74,7 +74,7 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      
+
 volumes:
   neo4j_data:
   minio_data:
