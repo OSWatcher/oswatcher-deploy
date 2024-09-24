@@ -20,6 +20,7 @@ services:
       - "7687:7687"  # Bolt
     volumes:
       - neo4j_data:/data
+      - ./plugins/procedure.jar:/plugins/procedure.jar
     healthcheck:
       test: ["CMD", "neo4j", "status"]
       interval: 1m
