@@ -4,10 +4,10 @@ services:
   neo4j:
     restart: unless-stopped
     environment:
-      # neo4j-admin server memory-recommendation --memory=20G --docker
-      NEO4J_server_memory_heap_initial__size: '6700m'
-      NEO4J_server_memory_heap_max__size: '6700m'
-      NEO4J_server_memory_pagecache_size: '8700m'
+      # neo4j-admin server memory-recommendation --memory=12G --docker
+      NEO4J_server_memory_heap_initial__size: '4600'
+      NEO4J_server_memory_heap_max__size: '4600m'
+      NEO4J_server_memory_pagecache_size: '4g'
       # It is also recommended turning out-of-memory errors into full crashes,
       # instead of allowing a partially crashed database to continue running:
       NEO4J_server_jvm_additional: "-XX:+ExitOnOutOfMemoryError"
