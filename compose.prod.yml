@@ -17,6 +17,8 @@ services:
 
   api:
     image: ghcr.io/oswatcher/graphql-api:latest
+    environment:
+      - NODE_ENV=production
     restart: unless-stopped
     labels:
       - "traefik.http.routers.api.rule=Host(`api.grapheos.app`)"
