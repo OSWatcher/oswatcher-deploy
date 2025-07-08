@@ -66,7 +66,7 @@ ansible-playbook -i inventory.yml site.yml
 
 - **Production**:
   - Uses pre-built Docker images from GitHub Container Registry
-  - Traefik configured with Let's Encrypt for `*.grapheos.cc` domains
+  - Traefik configured for `*.grapheos.cc` domains with Cloudflare SSL
   - Neo4j optimized for 12GB memory systems
   - Frontend deployed separately on GitHub Pages
 
