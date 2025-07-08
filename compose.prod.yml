@@ -13,7 +13,7 @@ services:
   minio:
     restart: unless-stopped
     labels:
-      - "traefik.http.routers.minio.rule=Host(`storage.grapheos.app`)"
+      - "traefik.http.routers.minio.rule=Host(`storage.grapheos.cc`)"
 
   api:
     image: ghcr.io/oswatcher/graphql-api:latest
@@ -21,7 +21,7 @@ services:
       - NODE_ENV=production
     restart: unless-stopped
     labels:
-      - "traefik.http.routers.api.rule=Host(`api.grapheos.app`)"
+      - "traefik.http.routers.api.rule=Host(`api.grapheos.cc`)"
 
   traefik:
     restart: unless-stopped
