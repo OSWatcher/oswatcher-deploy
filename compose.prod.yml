@@ -37,9 +37,6 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls=true"
-      - "--providers.file.filename=/dynamic.yml"
-    volumes:
-      - "./certs/prod.yml:/dynamic.yml"
 
 volumes:
 
