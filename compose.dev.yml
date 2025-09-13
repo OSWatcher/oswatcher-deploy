@@ -21,6 +21,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls=true"
       - "--providers.file.filename=/dynamic.yml"
+      - "--log.level=INFO"
     volumes:
       - "./certs/dev.yml:/dynamic.yml"
       - "./certs:/certs"
