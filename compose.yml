@@ -67,7 +67,7 @@ services:
     depends_on:
       - api
       - minio
-    image: traefik:v2.9
+    image: traefik:${TRAEFIK_VERSION}
     ports:
       - "80:80"
       - "443:443"
