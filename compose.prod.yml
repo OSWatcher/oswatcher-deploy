@@ -10,8 +10,28 @@ services:
       # instead of allowing a partially crashed database to continue running:
       NEO4J_server_jvm_additional: "-XX:+ExitOnOutOfMemoryError"
 
+  # Fail-safe: prevent default password in production
+  minio-security-check:
+    image: alpine:latest
+    command: |
+      sh -c '
+        if [ "$$MINIO_ROOT_PASSWORD" = "minioadmin" ]; then
+          echo "ERROR: Default MinIO password detected in production! Change MINIO_ROOT_PASSWORD"
+          exit 1
+        fi
+        echo "MinIO password security check passed"
+      '
+    environment:
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set}
+
   minio:
+    depends_on:
+      minio-security-check:
+        condition: service_completed_successfully
     restart: unless-stopped
+    environment:
+      # Fail-safe: require password to be set, prevents accidental insecure startup
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.minio.rule=Host(`storage.grapheos.cc`)"
