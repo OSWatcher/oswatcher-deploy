@@ -20,6 +20,7 @@ services:
 
   api:
     image: ghcr.io/oswatcher/graphql-api:latest
+    pull_policy: always
     environment:
       - NODE_ENV=production
     restart: unless-stopped
