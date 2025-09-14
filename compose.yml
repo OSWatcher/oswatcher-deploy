@@ -9,9 +9,8 @@ services:
       # https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_dbms.memory.transaction.total.max
       # 0: unlimited
       NEO4J_dbms_memory_transaction_total_max: 0
-      # avoid 'neo4j is already running' issues
+      # avoid 'neo4j is already running' issues - use tmpfs instead of /run
       # https://github.com/neo4j/neo4j/issues/12908#issuecomment-1643308694
-      NEO4J_server_directories_run: '/run'
       # https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/#config_server.bolt.thread_pool_max_size
       # increase default thread pool size to avoid starvation
       NEO4J_server_bolt_thread__pool__max__size: 800
@@ -21,6 +20,8 @@ services:
     volumes:
       - neo4j_data:/data
       - ./plugins/procedure.jar:/plugins/procedure.jar
+    tmpfs:
+      - /var/lib/neo4j/run
     healthcheck:
       test: ["CMD", "neo4j", "status"]
       interval: 1m
