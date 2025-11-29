@@ -10,6 +10,8 @@ services:
   api:
     build:
       context: ../graphql-api
+    environment:
+      DEBUG: ${NEO4J_GRAPHQL_DEBUG_LVL}
     labels:
       - "traefik.http.routers.api.rule=Host(`api.localhost`)"
 
