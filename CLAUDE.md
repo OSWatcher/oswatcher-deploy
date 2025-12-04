@@ -28,25 +28,68 @@ docker compose -f compose.yml -f compose.prod.yml down
 
 ### Neo4j Backup & Restore
 ```bash
-# Create backup (defaults to dev-neo4j-1 container)
-./neo4j-backup-restore.sh backup [container_name]
+# Restore from Neo4j backup dump (offline restore)
+./scripts/restore-backup-offline.sh <backup_file> [dev|prod]
 
-# Restore from backup
-./neo4j-backup-restore.sh restore [filename] [container_name]
+# Example: Restore to development environment
+./scripts/restore-backup-offline.sh backups/neo4j-backup.dump dev
+```
 
-# List available backups
-./neo4j-backup-restore.sh list
+### MinIO Backup
+```bash
+# Create compressed backup of MinIO data volume
+./scripts/minio-backup.sh
 
-# Copy data between volumes
-./neo4j-backup-restore.sh copy-volume [source_volume] [target_volume]
+# Backups are saved to backups/minio-backup-YYYYMMDD_HHMMSS.tar.xz
+```
+
+### MinIO Administration (mc client)
+```bash
+# Access mc client from within the running MinIO container
+docker compose -f compose.yml -f compose.dev.yml exec minio mc [command]
+
+# List buckets
+docker compose -f compose.yml -f compose.dev.yml exec minio mc ls local/
+
+# Set bucket policy (private/public/download/upload)
+docker compose -f compose.yml -f compose.dev.yml exec minio mc anonymous set none local/bucket-name
+
+# Create dedicated user for blob downloads (recommended over using root credentials)
+PASSWORD=$(openssl rand -base64 24)
+docker compose -f compose.yml -f compose.dev.yml exec minio mc admin user add local/ api-blob-download "$PASSWORD"
+docker compose -f compose.yml -f compose.dev.yml exec minio mc admin policy attach local/ readonly --user api-blob-download
+echo "Credentials - Username: api-blob-download, Password: $PASSWORD"
+
+# List users
+docker compose -f compose.yml -f compose.dev.yml exec minio mc admin user list local/
 ```
 
 ### Ansible Deployment
 ```bash
-# Deploy to remote servers
+# Deploy GitHub Actions runners to ops.grapheos.cc
 cd ansible
+export GITHUB_TOKEN="your_token"
 ansible-playbook -i inventory.yml site.yml
+
+# Deploys 20 self-hosted runners (builder-1 to builder-20) for OSWatcher/osw-builder
+# Modify roles/runner/vars/main.yml to change runner configuration
 ```
+
+## Environment Configuration
+
+The project uses environment files for configuration:
+- `.env` - Default configuration for development/test
+- `.env.prod` - Production overrides (minimal, only critical vars)
+- `.env.test` - Test environment configuration
+
+Key environment variables:
+- `NEO4J_VERSION`, `MINIO_VERSION`, `TRAEFIK_VERSION` - Service versions
+- `NEO4J_AUTH` - Set to `none` in dev/test, use credentials in prod
+- `MINIO_ROOT_USER/PASSWORD` - MinIO admin credentials (must change in prod)
+- `AUTH0_DOMAIN_URI`, `AUTH0_AUDIENCE` - Auth0 authentication config
+- `POSTHOG_PROJECT_API_KEY` - Analytics key (required in prod)
+- `RESTRICTED_BRANCH_NAME` - Branch restriction in API (e.g., "windows", "master")
+- `NEO4J_GRAPHQL_DEBUG_LVL` - GraphQL debug level (dev only)
 
 ## Architecture
 
@@ -73,14 +116,30 @@ ansible-playbook -i inventory.yml site.yml
 ### Key Configuration Files
 - `compose.yml`: Base service definitions
 - `compose.dev.yml`: Development overrides
-- `compose.prod.yml`: Production overrides
-- `certs/dev.yml`: Development SSL configuration
-- `certs/prod.yml`: Production SSL configuration
+- `compose.prod.yml`: Production overrides with security checks
+- `certs/dev.yml`: Development SSL configuration (self-signed)
+- `.env`: Environment variables (dev/test defaults)
+- `.env.prod`: Production environment variable overrides
+- `.env.test`: Test environment configuration
 
 ## Important Notes
 
 - Neo4j uses a custom procedure JAR at `./plugins/procedure.jar`
-- Production environment assumes external dependencies are available at their respective repositories
-- Ansible deployment requires proper inventory configuration in `ansible/inventory.yml`
-- All services use environment variables for configuration - check for `.env` files
-- Neo4j backup script requires manual configuration of `BACKUP_DIR` path
+- Production environment requires:
+  - `MINIO_ROOT_PASSWORD` must be set (default password is rejected)
+  - `POSTHOG_PROJECT_API_KEY` must be set
+  - Uses pre-built images from `ghcr.io/oswatcher/graphql-api:latest`
+- Production compose includes security checks that prevent startup with default passwords
+- Neo4j authentication is disabled in dev/test (`NEO4J_AUTH=none`)
+- `RESTRICTED_BRANCH_NAME` environment variable controls branch restrictions in the API
+- Neo4j is configured with:
+  - Unlimited transaction memory (`NEO4J_dbms_memory_transaction_total_max: 0`)
+  - Increased Bolt thread pool (800 threads) to avoid starvation
+  - tmpfs mount at `/var/lib/neo4j/run` to avoid "already running" issues
+- MinIO backups use maximum xz compression (`-9`) for space efficiency
+- Neo4j restore process requires stopping the service and uses `neo4j-admin` container
+- MinIO security:
+  - Create dedicated users for specific access patterns (e.g., `api-blob-download` for readonly access)
+  - Avoid using root credentials (`MINIO_ROOT_USER/PASSWORD`) in applications
+  - Set appropriate bucket policies (`private`, `public`, `download`, `upload`)
+  - The `mc` client is available inside the MinIO container for administration
