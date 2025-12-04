@@ -65,6 +65,8 @@ services:
       OBJECT_STORAGE_URI: "http://minio:${NEOGIT_OBJECT__PORT}"
       RESTRICTED_BRANCH_NAME: ${RESTRICTED_BRANCH_NAME}
       POSTHOG_PROJECT_API_KEY: ${POSTHOG_PROJECT_API_KEY}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:?MINIO_ACCESS_KEY must be set}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?MINIO_SECRET_KEY must be set}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.entrypoints=websecure"
