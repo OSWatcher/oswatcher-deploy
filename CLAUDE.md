@@ -99,16 +99,20 @@ Key environment variables:
 - **API**: GraphQL API service (built from `../graphql-api`)
 - **Frontend**: React application (built from `../osw-frontend`, dev only)
 - **Traefik**: Reverse proxy with SSL termination
+- **procedure-builder** (dev): Builds Neo4j procedure JAR from `../grapheos-procedures`
+- **procedure-init** (prod): Pulls procedure JAR from `ghcr.io/oswatcher/grapheos-procedures`
 
 ### Environment Differences
-- **Development**: 
+- **Development**:
   - Uses local builds for API and frontend
+  - Builds Neo4j procedures from `../grapheos-procedures` via `procedure-builder`
   - Traefik configured for localhost with self-signed certificates
   - Neo4j has verbose query logging enabled
   - Frontend runs on port 8080
 
 - **Production**:
   - Uses pre-built Docker images from GitHub Container Registry
+  - Pulls Neo4j procedures from `ghcr.io/oswatcher/grapheos-procedures` via `procedure-init`
   - Traefik configured for `*.grapheos.cc` domains with Cloudflare SSL
   - Neo4j optimized for 12GB memory systems
   - Frontend deployed separately on GitHub Pages
@@ -124,22 +128,42 @@ Key environment variables:
 
 ## Important Notes
 
-- Neo4j uses a custom procedure JAR at `./plugins/procedure.jar`
-- Production environment requires:
-  - `MINIO_ROOT_PASSWORD` must be set (default password is rejected)
-  - `POSTHOG_PROJECT_API_KEY` must be set
-  - Uses pre-built images from `ghcr.io/oswatcher/graphql-api:latest`
+### Named Volumes - CRITICAL
+- **NEVER use `docker compose down -v`** - this removes named volumes including `neo4j_data` which requires manual restoration from backup
+- Use `docker compose down` (without `-v`) to stop services while preserving data
+
+### Neo4j Custom Procedures
+- Custom procedures are provided by the `grapheos-procedures` repository (`../grapheos-procedures`)
+- The JAR is stored in the `procedure_plugin` named volume and mounted to Neo4j's `/plugins` directory
+- **Dev**: `procedure-builder` service builds the JAR from local source and copies it to the volume
+- **Prod**: `procedure-init` service pulls from `ghcr.io/oswatcher/grapheos-procedures:latest` and copies the JAR
+- Neo4j waits for the init container to complete before starting (`service_completed_successfully`)
+
+### Production Requirements
+- `MINIO_ROOT_PASSWORD` must be set (default password is rejected)
+- `POSTHOG_PROJECT_API_KEY` must be set
+- Uses pre-built images from `ghcr.io/oswatcher/graphql-api:latest` and `ghcr.io/oswatcher/grapheos-procedures:latest`
 - Production compose includes security checks that prevent startup with default passwords
-- Neo4j authentication is disabled in dev/test (`NEO4J_AUTH=none`)
+
+### Neo4j Configuration
+- Authentication is disabled in dev/test (`NEO4J_AUTH=none`)
+- Unlimited transaction memory (`NEO4J_dbms_memory_transaction_total_max: 0`)
+- Increased Bolt thread pool (800 threads) to avoid starvation
+- tmpfs mount at `/var/lib/neo4j/run` to avoid "already running" issues
+- Restore process requires stopping the service and uses `neo4j-admin` container
+
+### MinIO Configuration
+- Backups use maximum xz compression (`-9`) for space efficiency
+- Create dedicated users for specific access patterns (e.g., `api-blob-download` for readonly access)
+- Avoid using root credentials (`MINIO_ROOT_USER/PASSWORD`) in applications
+- Set appropriate bucket policies (`private`, `public`, `download`, `upload`)
+- The `mc` client is available inside the MinIO container for administration
+
+### Other
 - `RESTRICTED_BRANCH_NAME` environment variable controls branch restrictions in the API
-- Neo4j is configured with:
-  - Unlimited transaction memory (`NEO4J_dbms_memory_transaction_total_max: 0`)
-  - Increased Bolt thread pool (800 threads) to avoid starvation
-  - tmpfs mount at `/var/lib/neo4j/run` to avoid "already running" issues
-- MinIO backups use maximum xz compression (`-9`) for space efficiency
-- Neo4j restore process requires stopping the service and uses `neo4j-admin` container
-- MinIO security:
-  - Create dedicated users for specific access patterns (e.g., `api-blob-download` for readonly access)
-  - Avoid using root credentials (`MINIO_ROOT_USER/PASSWORD`) in applications
-  - Set appropriate bucket policies (`private`, `public`, `download`, `upload`)
-  - The `mc` client is available inside the MinIO container for administration
+
+## Related Repositories
+
+- `../graphql-api` - GraphQL API service (GitHub: `OSWatcher/graphql-api`)
+- `../grapheos-procedures` - Neo4j custom procedures (GitHub: `OSWatcher/grapheos-procedures`)
+- `../osw-frontend` - Frontend application (GitHub: `OSWatcher/osw-frontend`)
