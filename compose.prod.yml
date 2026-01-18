@@ -1,6 +1,15 @@
 services:
+  procedure-init:
+    image: ghcr.io/oswatcher/grapheos-procedures:latest
+    pull_policy: always
+    volumes:
+      - procedure_plugin:/plugin
+
   neo4j:
     restart: unless-stopped
+    depends_on:
+      procedure-init:
+        condition: service_completed_successfully
     environment:
       # neo4j-admin server memory-recommendation --memory=12G --docker
       NEO4J_server_memory_heap_initial__size: '4600m'

@@ -1,7 +1,16 @@
 version: '3.8'
 
 services:
+  procedure-builder:
+    build:
+      context: ../grapheos-procedures
+    volumes:
+      - procedure_plugin:/plugin
+
   neo4j:
+    depends_on:
+      procedure-builder:
+        condition: service_completed_successfully
     environment:
       NEO4J_apoc_export_file_enabled: "true"  # Enable APOC export to files
       NEO4J_db_logs_query_enabled: "VERBOSE"

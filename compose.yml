@@ -19,7 +19,7 @@ services:
       - "7687:7687" # Bolt
     volumes:
       - neo4j_data:/data
-      - ./plugins/procedure.jar:/plugins/procedure.jar
+      - procedure_plugin:/plugins
     tmpfs:
       - /var/lib/neo4j/run
     healthcheck:
@@ -105,3 +105,4 @@ services:
 volumes:
   neo4j_data:
   minio_data:
+  procedure_plugin:
