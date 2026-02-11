@@ -45,5 +45,8 @@ services:
       args:
         NODE_ENV: "development"
         GRAPHEOS_API_URI: "http://api"
+        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
+        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
     ports:
-      - "8080:8080"
+      - "5173:8080"
