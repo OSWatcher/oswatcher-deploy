@@ -21,6 +21,7 @@ services:
       context: ../graphql-api
     environment:
       DEBUG: ${NEO4J_GRAPHQL_DEBUG_LVL}
+      DIFF_DATE_LIMIT_YEAR: 2030
     labels:
       - "traefik.http.routers.api.rule=Host(`api.localhost`)"
 
