@@ -3,7 +3,7 @@ version: '3.8'
 services:
   procedure-builder:
     build:
-      context: ../grapheos-procedures
+      context: ../oswatcher-procedures
     volumes:
       - procedure_plugin:/plugin
 

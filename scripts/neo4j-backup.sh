@@ -22,7 +22,7 @@ $COMPOSE_CMD stop neo4j
 
 echo "Creating backup: $BACKUP_FILE"
 docker run --rm \
-    -v grapheos-deploy_neo4j_data:/data:ro \
+    -v oswatcher-deploy_neo4j_data:/data:ro \
     -v "$(pwd)/$BACKUP_DIR":/backup \
     alpine tar czf "/backup/$(basename "$BACKUP_FILE")" -C /data .
 

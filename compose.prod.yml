@@ -1,6 +1,6 @@
 services:
   procedure-init:
-    image: ghcr.io/oswatcher/grapheos-procedures:latest
+    image: ghcr.io/oswatcher/oswatcher-procedures:latest
     pull_policy: always
     volumes:
       - procedure_plugin:/plugin

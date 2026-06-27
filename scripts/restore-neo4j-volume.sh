@@ -27,7 +27,7 @@ $COMPOSE_CMD stop neo4j
 
 echo "Restoring from $BACKUP_FILE..."
 docker run --rm \
-    -v grapheos-deploy_neo4j_data:/data \
+    -v oswatcher-deploy_neo4j_data:/data \
     -v "$(realpath "$BACKUP_FILE")":/backup/neo4j-data.tar.gz:ro \
     alpine sh -c "rm -rf /data/* && tar xzf /backup/neo4j-data.tar.gz -C /data"
 

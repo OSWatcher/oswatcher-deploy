@@ -15,7 +15,7 @@ echo "Creating heavily compressed MinIO backup: $BACKUP_FILE"
 # Backup with maximum xz compression
 docker run --rm \
     -v "$(pwd)/$BACKUP_DIR":/backup \
-    -v grapheos-deploy_minio_data:/minio_data:ro \
+    -v oswatcher-deploy_minio_data:/minio_data:ro \
     ubuntu:latest \
     bash -c "apt-get update -qq && apt-get install -y xz-utils && tar -cvJf /backup/$(basename "$BACKUP_FILE") -C /minio_data ."
 

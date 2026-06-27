@@ -6,7 +6,7 @@ This document describes the operational procedures for deploying updates to the 
 
 **Host:** `ops.grapheos.cc`
 **User:** `ops`
-**Working Directory:** `~/grapheos-deploy`
+**Working Directory:** `~/oswatcher-deploy`
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ The `-A` flag enables SSH agent forwarding for accessing private repositories.
 ### Step 2: Navigate to Deployment Directory
 
 ```bash
-cd ~/grapheos-deploy
+cd ~/oswatcher-deploy
 ```
 
 ### Step 3: Authenticate with GitHub Container Registry
@@ -63,8 +63,8 @@ docker compose -f compose.yml -f compose.prod.yml up -d --force-recreate api
    ✔ 9824c27679d3 Already exists        0.0s
    [... layer pulls ...]
 [+] Running 2/2
- ✔ Container grapheos-deploy-neo4j-1  Running
- ✔ Container grapheos-deploy-api-1    Started
+ ✔ Container oswatcher-deploy-neo4j-1  Running
+ ✔ Container oswatcher-deploy-api-1    Started
 ```
 
 ### Step 5: Verify Deployment

@@ -26,7 +26,7 @@ $COMPOSE_CMD stop neo4j
 echo "Restoring backup from $BACKUP_FILE to neo4j database..."
 docker run --rm \
   -v $(realpath $BACKUP_FILE):/backup/neo4j.dump \
-  -v grapheos-deploy_neo4j_data:/data \
+  -v oswatcher-deploy_neo4j_data:/data \
   neo4j/neo4j-admin:latest \
   neo4j-admin database load --from-path=/backup neo4j --overwrite-destination --verbose
 
