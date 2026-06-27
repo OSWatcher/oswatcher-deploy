@@ -1,4 +1,7 @@
 /.env
+/.env.test
+/.env.prod
+/certs/*.pem
 /venv
 /backups
 /plugins
