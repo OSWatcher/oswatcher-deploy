@@ -43,7 +43,7 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.minio.rule=Host(`storage.grapheos.cc`)"
+      - "traefik.http.routers.minio.rule=Host(`storage.${DOMAIN:?DOMAIN must be set}`)"
       - "traefik.http.routers.minio.entrypoints=websecure"
       - "traefik.http.services.minio.loadbalancer.server.port=9000"
 
@@ -56,7 +56,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`api.grapheos.cc`)"
+      - "traefik.http.routers.api.rule=Host(`api.${DOMAIN:?DOMAIN must be set}`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.services.api.loadbalancer.server.port=4000"
 
