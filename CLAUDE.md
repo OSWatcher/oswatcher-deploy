@@ -66,7 +66,7 @@ docker compose -f compose.yml -f compose.dev.yml exec minio mc admin user list l
 
 ### Ansible Deployment
 ```bash
-# Deploy GitHub Actions runners to ops.grapheos.cc
+# Deploy GitHub Actions runners to the host set in ansible/inventory.yml
 cd ansible
 export GITHUB_TOKEN="your_token"
 ansible-playbook -i inventory.yml site.yml
@@ -78,12 +78,12 @@ ansible-playbook -i inventory.yml site.yml
 ## Environment Configuration
 
 The project uses environment files for configuration:
-- `.env` - Default configuration for development/test
-- `.env.prod` - Production overrides (minimal, only critical vars)
-- `.env.test` - Test environment configuration
+- `.env` - Local configuration (gitignored), created from `.env.example`
+- `.env.example` - Documented template with placeholder values
 
 Key environment variables:
 - `NEO4J_VERSION`, `MINIO_VERSION`, `TRAEFIK_VERSION` - Service versions
+- `DOMAIN` - Base domain for production Traefik routing (`api.<DOMAIN>`, `storage.<DOMAIN>`)
 - `NEO4J_AUTH` - Set to `none` in dev/test, use credentials in prod
 - `MINIO_ROOT_USER/PASSWORD` - MinIO admin credentials (must change in prod)
 - `AUTH0_DOMAIN_URI`, `AUTH0_AUDIENCE` - Auth0 authentication config
@@ -97,7 +97,7 @@ Key environment variables:
 - **Neo4j**: Graph database with APOC plugin and custom procedures
 - **MinIO**: S3-compatible object storage
 - **API**: GraphQL API service (built from `../graphql-api`)
-- **Frontend**: React application (built from `../osw-frontend`, dev only)
+- **Frontend**: Vue 3 application (built from `../osw-frontend`, dev only)
 - **Traefik**: Reverse proxy with SSL termination
 - **procedure-builder** (dev): Builds Neo4j procedure JAR from `../oswatcher-procedures`
 - **procedure-init** (prod): Pulls procedure JAR from `ghcr.io/oswatcher/oswatcher-procedures`
@@ -113,7 +113,7 @@ Key environment variables:
 - **Production**:
   - Uses pre-built Docker images from GitHub Container Registry
   - Pulls Neo4j procedures from `ghcr.io/oswatcher/oswatcher-procedures` via `procedure-init`
-  - Traefik configured for `*.grapheos.cc` domains with Cloudflare SSL
+  - Traefik routes `api.<DOMAIN>` and `storage.<DOMAIN>` (set `DOMAIN` in `.env`)
   - Neo4j optimized for 12GB memory systems
   - Frontend deployed separately on GitHub Pages
 
@@ -122,9 +122,7 @@ Key environment variables:
 - `compose.dev.yml`: Development overrides
 - `compose.prod.yml`: Production overrides with security checks
 - `certs/dev.yml`: Development SSL configuration (self-signed)
-- `.env`: Environment variables (dev/test defaults)
-- `.env.prod`: Production environment variable overrides
-- `.env.test`: Test environment configuration
+- `.env`: Environment variables (gitignored, see `.env.example`)
 
 ## Important Notes
 

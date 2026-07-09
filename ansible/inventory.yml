@@ -1,3 +1,4 @@
+# Replace with the host where the runners should be deployed
 ungrouped:
   hosts:
-    ops.grapheos.cc:
+    runners.example.com:

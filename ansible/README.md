@@ -1,15 +1,17 @@
 # GitHub Actions Runners
 
-Deploys 20 self-hosted GitHub Actions runners to `ops.grapheos.cc` for the `OSWatcher/osw-builder` repository.
+Deploys self-hosted GitHub Actions runners for the `OSWatcher/osw-builder` repository (20 by default).
 
 ## Setup
 
-1. Set GitHub token:
+1. Set the target host in `inventory.yml`.
+
+2. Set GitHub token:
    ```bash
    export GITHUB_TOKEN="your_token"
    ```
 
-2. Deploy runners:
+3. Deploy runners:
    ```bash
    ansible-playbook -i inventory.yml site.yml
    ```
