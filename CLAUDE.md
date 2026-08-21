@@ -97,7 +97,7 @@ Key environment variables:
 - **Neo4j**: Graph database with APOC plugin and custom procedures
 - **MinIO**: S3-compatible object storage
 - **API**: GraphQL API service (built from `../graphql-api`)
-- **Frontend**: Vue 3 application (built from `../osw-frontend`, dev only)
+- **Frontend**: Vue 3 application (built from `../frontend` in dev; built directly from the GitHub repo in prod)
 - **Traefik**: Reverse proxy with SSL termination
 - **procedure-builder** (dev): Builds Neo4j procedure JAR from `../oswatcher-procedures`
 - **procedure-init** (prod): Pulls procedure JAR from `ghcr.io/oswatcher/oswatcher-procedures`
@@ -113,9 +113,9 @@ Key environment variables:
 - **Production**:
   - Uses pre-built Docker images from GitHub Container Registry
   - Pulls Neo4j procedures from `ghcr.io/oswatcher/oswatcher-procedures` via `procedure-init`
-  - Traefik routes `api.<DOMAIN>` and `storage.<DOMAIN>` (set `DOMAIN` in `.env`)
+  - Traefik routes `<DOMAIN>` (frontend), `api.<DOMAIN>`, and `storage.<DOMAIN>` (set `DOMAIN` in `.env`)
   - Neo4j optimized for 12GB memory systems
-  - Frontend deployed separately on GitHub Pages
+  - Frontend is built directly from `https://github.com/OSWatcher/frontend.git` (no local checkout needed)
 
 ### Key Configuration Files
 - `compose.yml`: Base service definitions
@@ -140,7 +140,9 @@ Key environment variables:
 ### Production Requirements
 - `MINIO_ROOT_PASSWORD` must be set (default password is rejected)
 - `POSTHOG_PROJECT_API_KEY` must be set
+- `DOMAIN` must be set (used for `<DOMAIN>`, `api.<DOMAIN>`, `storage.<DOMAIN>` Traefik routing)
 - Uses pre-built images from `ghcr.io/oswatcher/graphql-api:latest` and `ghcr.io/oswatcher/oswatcher-procedures:latest`
+- Frontend has no pre-built image; it's built at deploy time directly from the `OSWatcher/frontend` GitHub repo (`master` branch) with `VITE_OSWATCHER_API_URI` baked to `https://api.<DOMAIN>`
 - Production compose includes security checks that prevent startup with default passwords
 
 ### Neo4j Configuration
@@ -164,4 +166,4 @@ Key environment variables:
 
 - `../graphql-api` - GraphQL API service (GitHub: `OSWatcher/graphql-api`)
 - `../oswatcher-procedures` - Neo4j custom procedures (GitHub: `OSWatcher/oswatcher-procedures`)
-- `../osw-frontend` - Frontend application (GitHub: `OSWatcher/osw-frontend`)
+- `../frontend` - Frontend application (GitHub: `OSWatcher/frontend`)

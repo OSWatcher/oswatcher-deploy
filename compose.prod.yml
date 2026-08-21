@@ -60,7 +60,25 @@ services:
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.services.api.loadbalancer.server.port=4000"
 
+  frontend:
+    build:
+      context: https://github.com/OSWatcher/frontend.git#master
+      args:
+        NODE_ENV: "production"
+        VITE_OSWATCHER_API_URI: "https://api.${DOMAIN:?DOMAIN must be set}"
+        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
+        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN:?DOMAIN must be set}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.services.frontend.loadbalancer.server.port=8080"
+
   traefik:
+    depends_on:
+      - frontend
     restart: unless-stopped
     command:
       - "--api.insecure=false"
@@ -71,5 +89,3 @@ services:
       - "--log.level=INFO"
 
 volumes:
-
-# frontend is deployed on Github Pages

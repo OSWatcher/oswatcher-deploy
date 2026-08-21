@@ -42,7 +42,7 @@ services:
     depends_on:
       - api
     build:
-      context: ../osw-frontend
+      context: ../frontend
       args:
         NODE_ENV: "development"
         OSWATCHER_API_URI: "http://api"

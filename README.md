@@ -30,12 +30,13 @@ This repository orchestrates the full OSWatcher service stack:
 | **MinIO** | `minio/minio` | Object storage for file blobs |
 | **API** | `ghcr.io/oswatcher/graphql-api` | GraphQL API over the graph |
 | **Traefik** | `traefik` | Reverse proxy and TLS |
-| **Frontend** | built from source (dev only) | Vue 3 web UI — deployed on GitHub Pages in production |
+| **Frontend** | built from [`OSWatcher/frontend`](https://github.com/OSWatcher/frontend) | Vue 3 web UI — built from sibling checkout in dev, directly from the GitHub repo in prod |
 
 ## Prerequisites
 
 - Docker with the Compose plugin
 - For development mode: sibling checkouts of the source repositories (see [Development](#development))
+- For production mode: no local checkouts needed — the frontend is built directly from the `OSWatcher/frontend` GitHub repo
 
 ## Configuration
 
@@ -49,7 +50,7 @@ Every environment-specific value (versions, credentials, Auth0 tenant, domain) i
 
 ## Development
 
-Development mode builds the API, frontend, and Neo4j procedures from sibling checkouts (`../graphql-api`, `../osw-frontend`, `../oswatcher-procedures`):
+Development mode builds the API, frontend, and Neo4j procedures from sibling checkouts (`../graphql-api`, `../frontend`, `../oswatcher-procedures`):
 
 ```bash
 docker compose -f compose.yml -f compose.dev.yml up --build
@@ -62,10 +63,10 @@ docker compose -f compose.yml -f compose.dev.yml up --build
 
 ## Production
 
-Production mode pulls pre-built images from GHCR and routes `api.<DOMAIN>` and `storage.<DOMAIN>` through Traefik:
+Production mode pulls pre-built images from GHCR for the API and Neo4j procedures, builds the frontend directly from the `OSWatcher/frontend` GitHub repo, and routes `<DOMAIN>` (frontend), `api.<DOMAIN>`, and `storage.<DOMAIN>` through Traefik:
 
 ```bash
-docker compose -f compose.yml -f compose.prod.yml up -d
+docker compose -f compose.yml -f compose.prod.yml up -d --build
 ```
 
 Production requires `DOMAIN`, `MINIO_ROOT_PASSWORD` (non-default), and `POSTHOG_PROJECT_API_KEY` to be set — fail-safe checks abort startup otherwise.
@@ -92,6 +93,7 @@ Scripts in [scripts/](scripts/) cover both stateful services:
 | [oswatcher-plugins](https://github.com/OSWatcher/oswatcher-plugins) | Capture/analysis plugins |
 | [osw-builder](https://github.com/OSWatcher/osw-builder) | OS capture pipeline (ISO → graph) |
 | [oswatcher-procedures](https://github.com/OSWatcher/oswatcher-procedures) | Custom Neo4j diff procedures |
+| [frontend](https://github.com/OSWatcher/frontend) | Vue 3 web UI |
 
 ## License
 

@@ -51,6 +51,16 @@ docker compose logs -f api
 curl http://localhost:4000/health
 ```
 
+## Deployment Procedure: Frontend
+
+The frontend has no pre-built image — `compose.prod.yml` builds it directly from the `OSWatcher/frontend` GitHub repo (`master` branch) at deploy time.
+
+```bash
+docker compose -f compose.yml -f compose.prod.yml up -d --build frontend
+```
+
+`--build` is required here (unlike the API) since there's no image to pull — Compose fetches the repo fresh and rebuilds.
+
 ## Rollback Procedure
 
 If the deployment fails or introduces issues:
