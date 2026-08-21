@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-> Docker Compose deployment stack for the [OSWatcher](https://github.com/OSWatcher) platform — the services behind [Grapheos](https://grapheos.cc), a queryable graph of operating system evolution.
+> Docker Compose deployment stack for the [OSWatcher](https://github.com/OSWatcher) platform — a queryable graph of operating system evolution.
 
 This repository orchestrates the full OSWatcher service stack:
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This repository contains deployment configurations for Grapheos, a Neo4j-based application stack. The project uses Docker Compose for multi-service orchestration and Ansible for deployment automation.
+This repository contains deployment configurations for OSWatcher, a Neo4j-based application stack. The project uses Docker Compose for multi-service orchestration and Ansible for deployment automation.
 
 ## Core Commands
 

@@ -7,7 +7,7 @@
       args:
         chdir: "{{ playbook_dir }}"
 
-- name: Grapheos deployment
+- name: OSWatcher deployment
   hosts: all
 
   roles:
