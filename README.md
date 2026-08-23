@@ -50,16 +50,42 @@ Every environment-specific value (versions, credentials, Auth0 tenant, domain) i
 
 ## Development
 
-Development mode builds the API, frontend, and Neo4j procedures from sibling checkouts (`../graphql-api`, `../frontend`, `../oswatcher-procedures`):
+Development mode builds the API, frontend, and Neo4j procedures from sibling checkouts. Clone all
+three next to this repository first, or the build fails on missing contexts:
 
 ```bash
-docker compose -f compose.yml -f compose.dev.yml up --build
+cd ..
+git clone https://github.com/OSWatcher/graphql-api
+git clone https://github.com/OSWatcher/frontend
+git clone https://github.com/OSWatcher/oswatcher-procedures
+cd oswatcher-deploy
+
+docker compose -f compose.yml -f compose.dev.yml up -d --build
 ```
+
+`compose.yml` is a base layer and is not runnable on its own: the `api` service has no image or
+build context until an overlay supplies one. Always pass `-f compose.yml` plus either
+`-f compose.dev.yml` or `-f compose.prod.yml`.
+
+Development mode needs no registry credentials, no domain and no Auth0 or PostHog keys, which makes
+it the mode to use for evaluating the project or working on it locally.
 
 - Frontend: <http://localhost:5173>
 - API: <http://api.localhost> (via Traefik) or <http://localhost:4000>
 - Neo4j browser: <http://localhost:7474>
 - MinIO console: <http://localhost:9001>
+
+Smoke test:
+
+```bash
+curl -s -X POST http://localhost:4000/graphql \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"{ branches { name } }"}'
+# {"data":{"branches":[]}}
+```
+
+An empty `branches` list is correct on a fresh deployment: the graph starts empty and is filled with
+[osw-builder](https://github.com/OSWatcher/osw-builder).
 
 ## Production
 
