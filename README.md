@@ -46,7 +46,7 @@ Copy the template and fill in your values:
 cp .env.example .env
 ```
 
-Every environment-specific value (versions, credentials, Auth0 tenant, domain) is set through `.env` — see the comments in [.env.example](.env.example). No configuration file in this repository needs editing.
+Every environment-specific value (versions, credentials, domain) is set through `.env` — see the comments in [.env.example](.env.example). No configuration file in this repository needs editing.
 
 ## Development
 
@@ -67,7 +67,7 @@ docker compose -f compose.yml -f compose.dev.yml up -d --build
 build context until an overlay supplies one. Always pass `-f compose.yml` plus either
 `-f compose.dev.yml` or `-f compose.prod.yml`.
 
-Development mode needs no registry credentials, no domain and no Auth0 or PostHog keys, which makes
+Development mode needs no registry credentials, no domain and no PostHog key, which makes
 it the mode to use for evaluating the project or working on it locally.
 
 - Frontend: <http://localhost:5173>
