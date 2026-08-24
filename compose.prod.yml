@@ -66,9 +66,6 @@ services:
       args:
         NODE_ENV: "production"
         VITE_OSWATCHER_API_URI: "https://api.${DOMAIN:?DOMAIN must be set}"
-        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
-        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
-        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
     restart: unless-stopped
     labels:
       - "traefik.enable=true"

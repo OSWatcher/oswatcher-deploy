@@ -86,7 +86,6 @@ Key environment variables:
 - `DOMAIN` - Base domain for production Traefik routing (`api.<DOMAIN>`, `storage.<DOMAIN>`)
 - `NEO4J_AUTH` - Set to `none` in dev/test, use credentials in prod
 - `MINIO_ROOT_USER/PASSWORD` - MinIO admin credentials (must change in prod)
-- `AUTH0_DOMAIN_URI`, `AUTH0_AUDIENCE` - Auth0 authentication config
 - `POSTHOG_PROJECT_API_KEY` - Analytics key (required in prod)
 - `RESTRICTED_BRANCH_NAME` - Branch restriction in API (e.g., "windows", "master")
 - `NEO4J_GRAPHQL_DEBUG_LVL` - GraphQL debug level (dev only)
