@@ -89,7 +89,7 @@ An empty `branches` list is correct on a fresh deployment: the graph starts empt
 
 ## Production
 
-Production mode pulls pre-built images from GHCR for the API and Neo4j procedures, builds the frontend directly from the `OSWatcher/frontend` GitHub repo, and routes `<DOMAIN>` (frontend), `api.<DOMAIN>`, and `storage.<DOMAIN>` through Traefik:
+Production mode pulls pre-built images from GHCR for the API, frontend and Neo4j procedures, and routes `<DOMAIN>` (frontend), `api.<DOMAIN>`, and `storage.<DOMAIN>` through Traefik:
 
 ```bash
 docker compose -f compose.yml -f compose.prod.yml up -d --build

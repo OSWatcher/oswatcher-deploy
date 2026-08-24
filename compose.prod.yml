@@ -61,11 +61,12 @@ services:
       - "traefik.http.services.api.loadbalancer.server.port=4000"
 
   frontend:
-    build:
-      context: https://github.com/OSWatcher/frontend.git#master
-      args:
-        NODE_ENV: "production"
-        VITE_OSWATCHER_API_URI: "https://api.${DOMAIN:?DOMAIN must be set}"
+    image: ghcr.io/oswatcher/frontend:latest
+    # The image is built with a placeholder API URI; its entrypoint substitutes
+    # this value into the bundle at container start, so no rebuild is needed to
+    # point a deployment at a different API.
+    environment:
+      VITE_OSWATCHER_API_URI: "https://api.${DOMAIN:?DOMAIN must be set}"
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
