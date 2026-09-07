@@ -97,7 +97,6 @@ Key environment variables:
 - `DOMAIN` - Base domain for production Traefik routing (`api.<DOMAIN>`, `storage.<DOMAIN>`)
 - `NEO4J_AUTH` - Set to `none` in dev/test, use credentials in prod
 - `MINIO_ROOT_USER/PASSWORD` - MinIO admin credentials (local defaults are committed; change for a server)
-- `RESTRICTED_BRANCH_NAME` - Branch restriction in API (e.g., "windows", "master")
 - `NEO4J_GRAPHQL_DEBUG_LVL` - GraphQL debug level (dev only)
 
 ## Architecture
@@ -166,9 +165,6 @@ Key environment variables:
 - Avoid using root credentials (`MINIO_ROOT_USER/PASSWORD`) in applications
 - Set appropriate bucket policies (`private`, `public`, `download`, `upload`)
 - The `mc` client is available inside the MinIO container for administration
-
-### Other
-- `RESTRICTED_BRANCH_NAME` environment variable controls branch restrictions in the API
 
 ## Related Repositories
 
