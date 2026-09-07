@@ -30,23 +30,53 @@ This repository orchestrates the full OSWatcher service stack:
 | **MinIO** | `minio/minio` | Object storage for file blobs |
 | **API** | `ghcr.io/oswatcher/graphql-api` | GraphQL API over the graph |
 | **Traefik** | `traefik` | Reverse proxy and TLS |
-| **Frontend** | built from [`OSWatcher/frontend`](https://github.com/OSWatcher/frontend) | Vue 3 web UI — built from sibling checkout in dev, directly from the GitHub repo in prod |
+| **Frontend** | `ghcr.io/oswatcher/frontend` | Vue 3 web UI — published image in prod mode, sibling checkout in dev |
 
-## Prerequisites
+## Run OSWatcher
 
-- Docker with the Compose plugin
-- For development mode: sibling checkouts of the source repositories (see [Development](#development))
-- For production mode: no local checkouts needed — the frontend is built directly from the `OSWatcher/frontend` GitHub repo
-
-## Configuration
-
-Copy the template and fill in your values:
+The production overlay runs the published images, both on your own machine and on a server.
+Clone only this repository:
 
 ```bash
-cp .env.example .env
+git clone https://github.com/OSWatcher/oswatcher-deploy
+cd oswatcher-deploy
 ```
 
-Every environment-specific value (versions, credentials, domain) is set through `.env` — see the comments in [.env.example](.env.example). No configuration file in this repository needs editing.
+The repository includes local defaults; no configuration or password setup is needed.
+Then start the stack:
+
+```bash
+docker compose up -d
+```
+
+The committed `.env` selects `compose.yml` and `compose.prod.yml`. It defaults to HTTP on
+localhost, loopback-only published ports and modest
+Neo4j memory settings. No domain registration, TLS certificate or analytics key is needed.
+
+Open **<http://localhost>**. Other endpoints:
+
+- GraphQL API: <http://api.localhost/graphql> or <http://localhost:4000/graphql>
+- Neo4j browser: <http://localhost:7474>
+- MinIO console: <http://localhost:9001>
+
+Verify the API:
+
+```bash
+curl --fail -s -X POST http://localhost:4000/graphql \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"{ branches { name } }"}'
+# {"data":{"branches":[]}}
+```
+
+A fresh graph is empty. A ready-to-use database download is planned; until it is published,
+use [osw-builder](https://github.com/OSWatcher/osw-builder) to build and capture OS images.
+Starting the services does not create an OS corpus.
+
+Stop the stack while keeping its data:
+
+```bash
+docker compose down
+```
 
 ## Development
 
@@ -64,11 +94,11 @@ docker compose -f compose.yml -f compose.dev.yml up -d --build
 ```
 
 `compose.yml` is a base layer and is not runnable on its own: the `api` service has no image or
-build context until an overlay supplies one. Always pass `-f compose.yml` plus either
-`-f compose.dev.yml` or `-f compose.prod.yml`.
+build context until an overlay supplies one. The template selects the production overlay by
+default. The explicit `-f` flags above override that selection for development.
 
 Development mode needs no registry credentials, no domain and no PostHog key, which makes
-it the mode to use for evaluating the project or working on it locally.
+it suitable for developing the services. Use the quickstart above to evaluate the published images.
 
 - Frontend: <http://localhost:5173>
 - API: <http://api.localhost> (via Traefik) or <http://localhost:4000>
@@ -87,17 +117,33 @@ curl -s -X POST http://localhost:4000/graphql \
 An empty `branches` list is correct on a fresh deployment: the graph starts empty and is filled with
 [osw-builder](https://github.com/OSWatcher/osw-builder).
 
-## Production
+## Deploy on a server
 
-Production mode pulls pre-built images from GHCR for the API, frontend and Neo4j procedures, and routes `<DOMAIN>` (frontend), `api.<DOMAIN>`, and `storage.<DOMAIN>` through Traefik:
+Use the same `compose.prod.yml` overlay. Edit `.env` to set `DOMAIN` to your domain,
+`HTTP_SCHEME=https`, and `BIND_ADDRESS` to the server interface you intend to expose.
+Replace the local MinIO credentials, then configure DNS and a trusted TLS certificate for `<DOMAIN>`, `api.<DOMAIN>` and
+`storage.<DOMAIN>`. Certificate provisioning is not automated by this repository;
+Traefik otherwise serves its default self-signed certificate.
+
+Configure Neo4j authentication and size its heap/page cache for your corpus. `BIND_ADDRESS`
+applies to all published service ports, including the database and storage; restrict those
+ports through your firewall when exposing the proxy publicly.
+
+The MinIO root password must be non-default. PostHog analytics is optional.
+For existing deployments without `HTTP_SCHEME` or memory overrides, HTTPS routing and the
+previous server memory defaults are retained.
 
 ```bash
-docker compose -f compose.yml -f compose.prod.yml up -d --build
+docker compose up -d
 ```
 
-Production requires `DOMAIN`, `MINIO_ROOT_PASSWORD` (non-default), and `POSTHOG_PROJECT_API_KEY` to be set — fail-safe checks abort startup otherwise.
+If an existing `.env` does not set `COMPOSE_FILE`, use the explicit equivalent:
 
-See [docs/deployment.md](docs/deployment.md) for the full deployment and rollback runbook.
+```bash
+docker compose -f compose.yml -f compose.prod.yml up -d
+```
+
+See [docs/deployment.md](docs/deployment.md) for the deployment and rollback runbook.
 
 ## Backup & Restore
 

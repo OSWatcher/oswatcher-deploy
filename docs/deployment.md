@@ -1,12 +1,14 @@
 # Deployment Procedures
 
-This document describes the operational procedures for deploying updates to an OSWatcher production environment.
+This document describes updates to the published-image stack. The same production overlay
+runs locally or on a server. The committed `.env` selects it for plain `docker compose`
+commands; explicit `-f` commands also work with older `.env` files.
 
 ## Prerequisites
 
 Before deploying, ensure:
 - You have SSH access to your production server
-- The deployment directory contains this repository with a configured `.env` (see `.env.example`)
+- The deployment directory contains this repository with a configured `.env`
 - The API Docker image has been built and pushed to GHCR (via CI/CD)
 
 ## Deployment Procedure: GraphQL API
@@ -53,13 +55,14 @@ curl http://localhost:4000/health
 
 ## Deployment Procedure: Frontend
 
-The frontend has no pre-built image — `compose.prod.yml` builds it directly from the `OSWatcher/frontend` GitHub repo (`master` branch) at deploy time.
+The frontend uses the public `ghcr.io/oswatcher/frontend:latest` image. Its entrypoint applies
+`VITE_OSWATCHER_API_URI` at container start, using `<HTTP_SCHEME>://api.<DOMAIN>` from the production configuration (HTTPS if unset).
 
 ```bash
-docker compose -f compose.yml -f compose.prod.yml up -d --build frontend
+docker compose -f compose.yml -f compose.prod.yml up -d --pull always frontend
 ```
 
-`--build` is required here (unlike the API) since there's no image to pull — Compose fetches the repo fresh and rebuilds.
+`--pull always` fetches the latest published image before recreating the frontend.
 
 ## Rollback Procedure
 
