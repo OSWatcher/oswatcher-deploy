@@ -8,6 +8,15 @@ This repository contains deployment configurations for OSWatcher, a Neo4j-based 
 
 ## Core Commands
 
+### Local Evaluation
+```bash
+docker compose up -d
+docker compose down
+```
+
+The committed .env selects compose.yml + compose.prod.yml and supplies localhost defaults.
+No setup or password editing is required for local evaluation.
+
 ### Development Environment
 ```bash
 # Start development environment with build
@@ -78,15 +87,17 @@ ansible-playbook -i inventory.yml site.yml
 ## Environment Configuration
 
 The project uses environment files for configuration:
-- `.env` - Local configuration (gitignored), created from `.env.example`
-- `.env.example` - Documented template with placeholder values
+- `.env` - Committed local defaults; edit it for a server deployment
 
 Key environment variables:
 - `NEO4J_VERSION`, `MINIO_VERSION`, `TRAEFIK_VERSION` - Service versions
+- `COMPOSE_FILE` - Selects the base and production overlay for plain Compose commands
+- `HTTP_SCHEME` - http for local use, https for a TLS server; HTTPS if unset
+- `BIND_ADDRESS` - Host interface for published ports; template uses 127.0.0.1
 - `DOMAIN` - Base domain for production Traefik routing (`api.<DOMAIN>`, `storage.<DOMAIN>`)
 - `NEO4J_AUTH` - Set to `none` in dev/test, use credentials in prod
-- `MINIO_ROOT_USER/PASSWORD` - MinIO admin credentials (must change in prod)
-- `POSTHOG_PROJECT_API_KEY` - Analytics key (required in prod)
+- `MINIO_ROOT_USER/PASSWORD` - MinIO admin credentials (local defaults are committed; change for a server)
+- `POSTHOG_PROJECT_API_KEY` - Analytics key (optional)
 - `RESTRICTED_BRANCH_NAME` - Branch restriction in API (e.g., "windows", "master")
 - `NEO4J_GRAPHQL_DEBUG_LVL` - GraphQL debug level (dev only)
 
@@ -96,7 +107,7 @@ Key environment variables:
 - **Neo4j**: Graph database with APOC plugin and custom procedures
 - **MinIO**: S3-compatible object storage
 - **API**: GraphQL API service (built from `../graphql-api`)
-- **Frontend**: Vue 3 application (built from `../frontend` in dev; built directly from the GitHub repo in prod)
+- **Frontend**: Vue 3 application (built from `../frontend` in dev; pulled from GHCR in prod)
 - **Traefik**: Reverse proxy with SSL termination
 - **procedure-builder** (dev): Builds Neo4j procedure JAR from `../oswatcher-procedures`
 - **procedure-init** (prod): Pulls procedure JAR from `ghcr.io/oswatcher/oswatcher-procedures`
@@ -113,15 +124,15 @@ Key environment variables:
   - Uses pre-built Docker images from GitHub Container Registry
   - Pulls Neo4j procedures from `ghcr.io/oswatcher/oswatcher-procedures` via `procedure-init`
   - Traefik routes `<DOMAIN>` (frontend), `api.<DOMAIN>`, and `storage.<DOMAIN>` (set `DOMAIN` in `.env`)
-  - Neo4j optimized for 12GB memory systems
-  - Frontend is built directly from `https://github.com/OSWatcher/frontend.git` (no local checkout needed)
+  - Neo4j memory configurable via NEO4J_HEAP_INITIAL_SIZE, NEO4J_HEAP_MAX_SIZE and NEO4J_PAGECACHE_SIZE; template values suit local evaluation
+  - Frontend is pulled from `ghcr.io/oswatcher/frontend:latest` (no sibling checkout needed)
 
 ### Key Configuration Files
 - `compose.yml`: Base service definitions
 - `compose.dev.yml`: Development overrides
 - `compose.prod.yml`: Production overrides with security checks
 - `certs/dev.yml`: Development SSL configuration (self-signed)
-- `.env`: Environment variables (gitignored, see `.env.example`)
+- `.env`: Committed local defaults; edit for a server deployment
 
 ## Important Notes
 
@@ -138,10 +149,10 @@ Key environment variables:
 
 ### Production Requirements
 - `MINIO_ROOT_PASSWORD` must be set (default password is rejected)
-- `POSTHOG_PROJECT_API_KEY` must be set
+- `POSTHOG_PROJECT_API_KEY` is optional; empty disables analytics
 - `DOMAIN` must be set (used for `<DOMAIN>`, `api.<DOMAIN>`, `storage.<DOMAIN>` Traefik routing)
 - Uses pre-built images from `ghcr.io/oswatcher/graphql-api:latest` and `ghcr.io/oswatcher/oswatcher-procedures:latest`
-- Frontend has no pre-built image; it's built at deploy time directly from the `OSWatcher/frontend` GitHub repo (`master` branch) with `VITE_OSWATCHER_API_URI` baked to `https://api.<DOMAIN>`
+- Frontend uses `ghcr.io/oswatcher/frontend:latest`; its entrypoint sets `VITE_OSWATCHER_API_URI` to `<HTTP_SCHEME>://api.<DOMAIN>` at container start (HTTPS if unset)
 - Production compose includes security checks that prevent startup with default passwords
 
 ### Neo4j Configuration
