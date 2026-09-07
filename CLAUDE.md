@@ -97,7 +97,6 @@ Key environment variables:
 - `DOMAIN` - Base domain for production Traefik routing (`api.<DOMAIN>`, `storage.<DOMAIN>`)
 - `NEO4J_AUTH` - Set to `none` in dev/test, use credentials in prod
 - `MINIO_ROOT_USER/PASSWORD` - MinIO admin credentials (local defaults are committed; change for a server)
-- `POSTHOG_PROJECT_API_KEY` - Analytics key (optional)
 - `RESTRICTED_BRANCH_NAME` - Branch restriction in API (e.g., "windows", "master")
 - `NEO4J_GRAPHQL_DEBUG_LVL` - GraphQL debug level (dev only)
 
@@ -149,7 +148,6 @@ Key environment variables:
 
 ### Production Requirements
 - `MINIO_ROOT_PASSWORD` must be set (default password is rejected)
-- `POSTHOG_PROJECT_API_KEY` is optional; empty disables analytics
 - `DOMAIN` must be set (used for `<DOMAIN>`, `api.<DOMAIN>`, `storage.<DOMAIN>` Traefik routing)
 - Uses pre-built images from `ghcr.io/oswatcher/graphql-api:latest` and `ghcr.io/oswatcher/oswatcher-procedures:latest`
 - Frontend uses `ghcr.io/oswatcher/frontend:latest`; its entrypoint sets `VITE_OSWATCHER_API_URI` to `<HTTP_SCHEME>://api.<DOMAIN>` at container start (HTTPS if unset)

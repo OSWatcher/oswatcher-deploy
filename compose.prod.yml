@@ -52,7 +52,6 @@ services:
     pull_policy: always
     environment:
       - NODE_ENV=production
-      - POSTHOG_PROJECT_API_KEY=${POSTHOG_PROJECT_API_KEY:-}
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
