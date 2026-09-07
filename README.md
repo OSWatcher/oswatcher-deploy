@@ -51,7 +51,7 @@ docker compose up -d
 
 The committed `.env` selects `compose.yml` and `compose.prod.yml`. It defaults to HTTP on
 localhost, loopback-only published ports and modest
-Neo4j memory settings. No domain registration, TLS certificate or analytics key is needed.
+Neo4j memory settings. No domain registration or TLS certificate is needed.
 
 Open **<http://localhost>**. Other endpoints:
 
@@ -97,7 +97,7 @@ docker compose -f compose.yml -f compose.dev.yml up -d --build
 build context until an overlay supplies one. The template selects the production overlay by
 default. The explicit `-f` flags above override that selection for development.
 
-Development mode needs no registry credentials, no domain and no PostHog key, which makes
+Development mode needs no registry credentials and no domain, which makes
 it suitable for developing the services. Use the quickstart above to evaluate the published images.
 
 - Frontend: <http://localhost:5173>
@@ -129,7 +129,7 @@ Configure Neo4j authentication and size its heap/page cache for your corpus. `BI
 applies to all published service ports, including the database and storage; restrict those
 ports through your firewall when exposing the proxy publicly.
 
-The MinIO root password must be non-default. PostHog analytics is optional.
+The MinIO root password must be non-default.
 For existing deployments without `HTTP_SCHEME` or memory overrides, HTTPS routing and the
 previous server memory defaults are retained.
 
